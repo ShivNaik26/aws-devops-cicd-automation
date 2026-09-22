@@ -1,11 +1,19 @@
-data "aws_vpc" "default" {
-  default = true
+data "aws_vpc" "our_vpc" {
+  id = "vpc-0064246ceed4e78bb"
 }
 
-data "aws_subnets" "default" {
+data "aws_subnets" "our_public_subnets" {
   filter {
     name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
+    values = [data.aws_vpc.our_vpc.id]
+  }
+
+  filter {
+    name   = "subnet-id"
+    values = [
+      "subnet-0ce545a00b871d0f6",
+      "subnet-02385d62800e2e7b0"
+    ]
   }
 }
 
@@ -14,7 +22,7 @@ resource "aws_eks_cluster" "main" {
   role_arn = aws_iam_role.eks_cluster_role.arn
 
   vpc_config {
-    subnet_ids = data.aws_subnets.default.ids
+    subnet_ids = data.aws_subnets.our_public_subnets.ids
   }
 
   depends_on = [
@@ -27,7 +35,8 @@ resource "aws_eks_node_group" "main" {
   cluster_name    = aws_eks_cluster.main.name
   node_group_name = "aws-devops-node-group"
   node_role_arn   = aws_iam_role.eks_node_role.arn
-  subnet_ids      = data.aws_subnets.default.ids
+
+  subnet_ids = data.aws_subnets.our_public_subnets.ids
 
   instance_types = ["t3.micro"]
 
