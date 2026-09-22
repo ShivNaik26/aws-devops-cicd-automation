@@ -21,11 +21,17 @@ pipeline {
             }
         }
 
-        stage('Terraform Plan') {
+       stage('Terraform Plan') {
             steps {
-                sh 'terraform plan'
+        sh 'terraform plan -out=tfplan'
             }
-        }
+       }
+
+       stage('Terraform Apply') {
+    steps {
+        sh 'terraform apply -auto-approve tfplan'
+           }
+       }
 
     }
 }
