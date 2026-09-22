@@ -2,34 +2,30 @@ pipeline {
     agent any
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Build') {
+        stage('Terraform Init') {
             steps {
-                echo 'Build stage started'
+                sh 'terraform init'
             }
         }
 
-        stage('Test') {
+        stage('Terraform Validate') {
             steps {
-                echo 'Test stage started'
+                sh 'terraform validate'
             }
         }
 
-        stage('SonarQube') {
+        stage('Terraform Plan') {
             steps {
-                echo 'SonarQube stage will be configured next'
+                sh 'terraform plan'
             }
         }
 
-        stage('Dependency Check') {
-            steps {
-                echo 'OWASP Dependency-Check stage will be configured next'
-            }
-        }
     }
 }
